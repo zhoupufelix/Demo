@@ -10,8 +10,8 @@ layui.use(['element'], function(){
 
 	$('.layui-tab-title li').eq(0).find('i').remove();
 
-	height = $('.layui-layout-admin .site-demo').height();
-	$('.layui-layout-admin .site-demo').height(height-100);
+	height = $('.layui-layout-back .site-demo').height();
+	$('.layui-layout-back .site-demo').height(height-100);
 
 	if($(window).width()<750){
 		trun = 0;
