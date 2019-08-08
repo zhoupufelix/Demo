@@ -6,13 +6,25 @@ import (
 	"Demo/config"
 	"log"
 	"reflect"
+	_ "github.com/go-sql-driver/mysql"
 )
+
+type BaseModel struct {
+
+}
+
 
 var (
 	db *sql.DB //声明DB的结构体对象
 	err error
 	tx *sql.Tx
 )
+
+type Response struct {
+	Code int
+	Msg string
+	Data interface{}
+}
 
 func init(){
 	db ,err = sql.Open("mysql",fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&allowOldPasswords=1",
@@ -24,46 +36,48 @@ func init(){
 	if err != nil {
 		log.Fatal(err)
 	}
+	//设置最大空闲连接数
 	db.SetMaxIdleConns(config.MYSQL_MAXIDLE)
+	//设置最大连接数
 	db.SetMaxOpenConns(config.MYSQL_MAXCONNS)
 }
 
 
 //insret data by sql
-func Insert(sql string,args ...interface{})(id uint, err error){
+func (*BaseModel)Insert(sql string,args ...interface{})(lastInsertId int64, err error){
 	stmt,err := db.Prepare(sql)
 	if err != nil {
 		log.Printf("Prepare Statement failed,err:%v",err)
 		return
 	}
 	defer stmt.Close()
-	result,err := stmt.Exec(args)
+	result,err := stmt.Exec(args...)
 	if err != nil {
 		log.Printf("Insert failed,err:%v",err)
 		return
 	}
-	lastInsertID,err := result.LastInsertId()
+	lastInsertId,err = result.LastInsertId()
 	if err != nil {
 		log.Printf("Get LastInsrtID failed,err:%v",err)
 		return
 	}
-	return lastInsertID,err
+	return lastInsertId,err
 }
 
 //delete data by sql
-func Delete(sql string,args ...interface{})(effectRows uint,err error){
+func (*BaseModel)Delete(sql string,args ...interface{})(effectRows int64,err error){
 	stmt,err := db.Prepare(sql)
 	if err != nil {
 		log.Printf("Prepare Statement failed,err:%v",err)
 		return
 	}
 	defer stmt.Close()
-	result,err := stmt.Exec(args)
+	result,err := stmt.Exec(args...)
 	if err != nil {
 		log.Printf("Delete failed,err:%v",err)
 		return
 	}
-	effectRows,err := result.RowsAffected()
+	effectRows,err = result.RowsAffected()
 	if err != nil {
 		log.Printf("Get EffectRows failed,err:%v",err)
 		return
@@ -72,19 +86,19 @@ func Delete(sql string,args ...interface{})(effectRows uint,err error){
 }
 
 //update data by sql
-func Update(sql string,args ... interface{})(effectRows uint,err error){
+func (*BaseModel)Update(sql string,args ... interface{})(effectRows int64,err error){
 	stmt,err := db.Prepare(sql)
 	if err != nil {
 		log.Printf("Prepare Statement failed,err:%v",err)
 		return
 	}
 	defer stmt.Close()
-	result,err := stmt.Exec(args)
+	result,err := stmt.Exec(args...)
 	if err != nil {
 		log.Printf("Update failed,err:%v",err)
 		return
 	}
-	effectRows,err := result.RowsAffected()
+	effectRows,err = result.RowsAffected()
 	if err != nil {
 		log.Printf("Get EffectRows failed,err:%v",err)
 		return
@@ -92,22 +106,22 @@ func Update(sql string,args ... interface{})(effectRows uint,err error){
 	return effectRows,err
 }
 
-func QueryAll(sql string,struc interface{},args ...interface{})([]interface{},error){
+func (*BaseModel)QueryAll(sql string,struc interface{},args ...interface{})(*[]interface{},error){
 	stmt,err := db.Prepare(sql)
 	if err!= nil {
 		log.Printf("Query Prepare Failed,err=%v",err)
-		return
+		return nil,err
 	}
 	defer stmt.Close()
 
 	rows,err := stmt.Query(args...)
 	if err!= nil {
 		log.Printf("Query Failed,err=%v",err)
-		return
+		return nil,err
 	}
 	defer rows.Close()
 
-	result := make([]interface{},0)
+	slice := make([]interface{},0)
 	s := reflect.ValueOf(struc).Elem()
 	length := s.NumField()
 	onerow := make([]interface{},length)
@@ -119,71 +133,42 @@ func QueryAll(sql string,struc interface{},args ...interface{})([]interface{},er
 		err = rows.Scan(onerow...)
 		if err != nil {
 			log.Println(err)
-			return
+			return nil,err
 		}
-		result = append(result,s.Interface())
+		slice = append(slice,s.Interface())
 	}
 
-	return &result
-}
-
-func QueryOne(sql string,struc interface{},args ...interface{})(*[]interface{},error){
-	stmt,err := db.Prepare(sql)
-	if err!= nil {
-		log.Printf("Query Prepare Failed,err=%v",err)
-		return
-	}
-	defer stmt.Close()
-
-	result := make([]interface{},0)
-	s := reflect.ValueOf(struc).Elem()
-	length := s.NumField()
-	onerow := make([]interface{},length)
-	row := stmt.QueryRow(args...)
-
-	err = row.Scan()
-
-
-
-	for i:=0;i<length ;i++  {
-		onerow[i] = s.Field(i).Addr().Interface()
-	}
-
-
-
-	return &result
+	return &slice,nil
 }
 
 
 
-
-
-func Close(){
+func (*BaseModel)CloseDB(){
 	defer db.Close()
 }
 
-func Ping()error{
+func (*BaseModel)Ping(){
 	defer db.Ping()
 }
 
 
 /***********************************************************事务相关************************************************************/
-func Begin()(tx *sql.Tx, error){
+func (*BaseModel)Begin()(tx *sql.Tx, err error){
 	tx,err = db.Begin()
 	return tx,err
 }
 
-func Rollback() error{
+func (*BaseModel)Rollback() error{
 	err = tx.Rollback()
 	return err
 }
 
-func Commit()error{
+func (*BaseModel)Commit()error{
 	err = tx.Commit()
 	return err
 }
 
-func TransactionExec(sql string,args ...interface{})(effectRows uint,err error){
+func (*BaseModel)TransactionExec(sql string,args ...interface{})(effectRows int64,err error){
 	stmt,err := tx.Prepare(sql)
 	if err != nil {
 		log.Printf("Transaction:Prepare sql failed.err=%v",err)
@@ -195,7 +180,7 @@ func TransactionExec(sql string,args ...interface{})(effectRows uint,err error){
 		log.Printf("Transaction:Exec sql failed.err=%v",err)
 		return
 	}
-	effectRows,err := result.RowsAffected()
+	effectRows,err = result.RowsAffected()
 	if err != nil {
 		log.Printf("Transaction:Get EffectRows failed.err=%v",err)
 		return

@@ -2,14 +2,19 @@ package back
 
 import (
 	"net/http"
+	"fmt"
 	"Demo/config"
 	"log"
 	"html/template"
-	"fmt"
 )
 
 type IndexController struct {
 	Controller
+}
+
+type Outflow struct {
+	ID int `db:"id"`
+	Order_sn string `db:"order_sn"`
 }
 
 func (this *IndexController) Index(w http.ResponseWriter ,r *http.Request){

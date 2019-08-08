@@ -14,6 +14,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
     <link rel="stylesheet" href="/static/css/x-admin.css" media="all">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
 <body style="background-color: #393D49">
@@ -35,14 +37,14 @@
         <div class="x-avtar">
             <img src="/static/images/logo.png" alt="">
         </div>
-        <div class="input">
+        <div class="input" id="app">
             <form class="layui-form">
                 <div class="layui-form-item x-login-box">
                     <label for="username" class="layui-form-label">
                         <i class="layui-icon">&#xe612;</i>
                     </label>
                     <div class="layui-input-inline">
-                        <input type="text" id="username" name="username" required="" lay-verify="username"
+                        <input v-model="username" type="text" id="username" name="username" required="" lay-verify="username"
                                autocomplete="off" placeholder="username" class="layui-input">
                     </div>
                 </div>
@@ -51,12 +53,12 @@
                         <i class="layui-icon">&#xe628;</i>
                     </label>
                     <div class="layui-input-inline">
-                        <input type="password" id="pass" name="pass" required="" lay-verify="pass"
+                        <input v-model="password" type="password" id="pass" name="pass" required="" lay-verify="pass"
                                autocomplete="off" placeholder="******" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item" id="loginbtn">
-                    <button  class="layui-btn" lay-filter="save" lay-submit="">
+                    <button  @click="sub()" class="layui-btn"  >
                         登 录
                     </button>
                 </div>
@@ -64,29 +66,55 @@
         </div>
     </div>
 </div>
-<p style="color:#fff;text-align: center;">Copyright © 2017.Company name All rights X-admin </p>
 <script src="/static/lib/layui/layui.js" charset="utf-8">
 </script>
 <script>
-    layui.use(['form'],
-            function() {
-                $ = layui.jquery;
-                var form = layui.form(),
-                        layer = layui.layer;
 
-                $('.x-login-right li').click(function(event) {
-                    color = $(this).attr('color');
-                    $('body').css('background-color', color);
-                });
+    window.onload = function() {
+        layui.use(['form'],
+                function() {
+                    $ = layui.jquery;
+                    var form = layui.form(), layer = layui.layer;
 
-                //监听提交
-                form.on('submit(save)',
-                        function() {
-                            $.post("/login/do",function(data,status){
-                                alert("Data: " + data + "nStatus: " + status);
-                            });
-                        });
+                    $('.x-login-right li').click(function (event) {
+                        color = $(this).attr('color');
+                        $('body').css('background-color', color);
+                    });
+
                 });
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                username: '',
+                password: '',
+            },
+            methods: {
+                sub:function () {
+                    event.preventDefault();
+                    data = {
+                        username:this.username,
+                        password:this.password
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: "/login/do",
+                        traditional: true,
+                        // contentType: "application/json",
+                        // data: JSON.stringify(data),
+                        data: data,
+                        success: function (str) {
+                            rsp = $.parseJSON(str);
+                            if (rsp.code < 0){
+                                layer.msg(rsp.msg);
+                                return false;
+                            }
+                            window.location.href = '/back/index/index';
+                        }
+                    })
+                },
+            }
+        })
+    }
 
 </script>
 </body>

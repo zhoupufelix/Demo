@@ -19,6 +19,7 @@ func NewRouter()*http.ServeMux{
 	public := &controller.PublicController{}
 	mux.HandleFunc("/login/index",public.Login)
 	mux.HandleFunc("/login/do",public.DoLogin)
+	mux.HandleFunc("/login/test",public.Test)
 
 	//back
 	admin := &back.IndexController{}
