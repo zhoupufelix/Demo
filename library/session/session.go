@@ -1,4 +1,4 @@
-package library
+package session
 
 import (
 	"sync"
@@ -56,16 +56,16 @@ func(m *Manager)GenerateSID()string{
 }
 
 //SessionStart 开启 session
-func(m *Manager)SessionStart(w http.ResponseWriter,r *http.Request)(Session,error){
+func(m *Manager)SessionStart(w http.ResponseWriter,r *http.Request)(session Session){
 	m.lock.Lock()
 	defer m.lock.Unlock()
 	cookie,err := r.Cookie(m.cookieName)
 	if err != nil || cookie.Value == "" {
 		sid:= m.GenerateSID()
-		session,_:=m.provider.SessionInit(sid)
+		session,_ =m.provider.SessionInit(sid)
 		newCookie := http.Cookie{
 			Name : m.cookieName,
-			Value:session.Get(m.cookieName),
+			Value: url.QueryEscape(sid),
 			Path:"/",
 			HttpOnly:true,
 			MaxAge:int(m.maxLifeTime),
@@ -73,7 +73,7 @@ func(m *Manager)SessionStart(w http.ResponseWriter,r *http.Request)(Session,erro
 		http.SetCookie(w,&newCookie)
 	}else{
 		sid,_:=url.QueryUnescape(cookie.Value)
-		session,_:= m.provider.SessionRead(sid)
+		session,_ = m.provider.SessionRead(sid)
 	}
 	return
 }

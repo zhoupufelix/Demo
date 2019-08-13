@@ -25,6 +25,9 @@ func NewRouter()*http.ServeMux{
 	admin := &back.IndexController{}
 	mux.HandleFunc("/back/index/index",admin.Index)
 
-
 	return mux
 }
+
+
+
+

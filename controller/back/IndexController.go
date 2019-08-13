@@ -12,10 +12,6 @@ type IndexController struct {
 	Controller
 }
 
-type Outflow struct {
-	ID int `db:"id"`
-	Order_sn string `db:"order_sn"`
-}
 
 func (this *IndexController) Index(w http.ResponseWriter ,r *http.Request){
 	if r.Method == "GET" {

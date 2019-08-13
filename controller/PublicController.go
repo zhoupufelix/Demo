@@ -42,12 +42,15 @@ func (p *PublicController)DoLogin(w http.ResponseWriter,r *http.Request){
 	fmt.Fprint(w,string(jsonStr))
 }
 
-func (p *PublicController)Test(w http.ResponseWriter,r *http.Request){
+func(p *PublicController)Test(w http.ResponseWriter,r *http.Request){
 	if r.Method == "GET" {
-		users :=  &model.Users{}
-		lastInsertID := users.AddUsers()
-		fmt.Fprint(w,lastInsertID)
+		users := &model.Users{}
+		users,err := users.FindByUsername("felix")
+		if err != nil {
+			log.Println(err)
+		}else{
+			fmt.Println(users)
+		}
+
 	}
-
 }
-

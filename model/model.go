@@ -47,80 +47,68 @@ func init(){
 func (*BaseModel)Insert(sql string,args ...interface{})(lastInsertId int64, err error){
 	stmt,err := db.Prepare(sql)
 	if err != nil {
-		log.Printf("Prepare Statement failed,err:%v",err)
 		return
 	}
 	defer stmt.Close()
 	result,err := stmt.Exec(args...)
 	if err != nil {
-		log.Printf("Insert failed,err:%v",err)
 		return
 	}
 	lastInsertId,err = result.LastInsertId()
 	if err != nil {
-		log.Printf("Get LastInsrtID failed,err:%v",err)
 		return
 	}
-	return lastInsertId,err
+	return
 }
 
 //delete data by sql
 func (*BaseModel)Delete(sql string,args ...interface{})(effectRows int64,err error){
 	stmt,err := db.Prepare(sql)
 	if err != nil {
-		log.Printf("Prepare Statement failed,err:%v",err)
 		return
 	}
 	defer stmt.Close()
 	result,err := stmt.Exec(args...)
 	if err != nil {
-		log.Printf("Delete failed,err:%v",err)
 		return
 	}
 	effectRows,err = result.RowsAffected()
 	if err != nil {
-		log.Printf("Get EffectRows failed,err:%v",err)
 		return
 	}
-	return effectRows,err
+	return
 }
 
 //update data by sql
 func (*BaseModel)Update(sql string,args ... interface{})(effectRows int64,err error){
 	stmt,err := db.Prepare(sql)
 	if err != nil {
-		log.Printf("Prepare Statement failed,err:%v",err)
 		return
 	}
 	defer stmt.Close()
 	result,err := stmt.Exec(args...)
 	if err != nil {
-		log.Printf("Update failed,err:%v",err)
 		return
 	}
 	effectRows,err = result.RowsAffected()
 	if err != nil {
-		log.Printf("Get EffectRows failed,err:%v",err)
 		return
 	}
-	return effectRows,err
+	return
 }
 
 func (*BaseModel)QueryAll(sql string,struc interface{},args ...interface{})(*[]interface{},error){
 	stmt,err := db.Prepare(sql)
 	if err!= nil {
-		log.Printf("Query Prepare Failed,err=%v",err)
 		return nil,err
 	}
 	defer stmt.Close()
 
 	rows,err := stmt.Query(args...)
 	if err!= nil {
-		log.Printf("Query Failed,err=%v",err)
 		return nil,err
 	}
 	defer rows.Close()
-
 	slice := make([]interface{},0)
 	s := reflect.ValueOf(struc).Elem()
 	length := s.NumField()
@@ -140,6 +128,35 @@ func (*BaseModel)QueryAll(sql string,struc interface{},args ...interface{})(*[]i
 
 	return &slice,nil
 }
+
+func(*BaseModel)QueryOne(sql string,struc interface{},args ...interface{})(err error){
+	stmt,err := db.Prepare(sql)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	row := stmt.QueryRow(args...)
+
+	s := reflect.ValueOf(struc).Elem()
+	length := s.NumField()
+	out := make([]interface{},0)
+
+	for i:=0;i<length ;i++  {
+		//去除类型是对象的
+		if  s.Field(i).Type().Kind() == reflect.Struct {
+			continue
+		}
+
+		out = append(out,s.Field(i).Addr().Interface())
+	}
+
+	err = row.Scan(out...)
+	if err != nil {
+		return
+	}
+	return
+}
+
 
 
 
