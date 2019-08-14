@@ -6,6 +6,8 @@ import (
 	"Demo/controller"
 	"Demo/controller/back"
 	"Demo/config"
+	"github.com/julienschmidt/httprouter"
+	"Demo/api/v1"
 )
 
 var mux = &http.ServeMux{}
@@ -28,6 +30,10 @@ func NewRouter()*http.ServeMux{
 	return mux
 }
 
+func NewApiRouter()*httprouter.Router{
+	mux := httprouter.New()
+	mux.GET("/v1/users/:id",v1.GetUserByUID)
 
-
+	return mux
+}
 

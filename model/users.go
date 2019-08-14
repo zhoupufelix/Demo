@@ -39,3 +39,4 @@ func (u *Users)FindByUsername(username string)(*Users,error){
 	}
 	return u,nil
 }
+
