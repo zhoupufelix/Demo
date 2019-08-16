@@ -7,7 +7,7 @@ import (
 )
 
 func main(){
-	mux := router.NewApiRouter()
+	mux := router.NewRouter()
 	server := http.Server{
 		Addr:config.API_ADDR,
 		Handler:mux,

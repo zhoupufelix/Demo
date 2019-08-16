@@ -17,6 +17,19 @@ type FileProvider struct {
 }
 
 
+//SessionInit(sid string)(Session,error)
+//SessionRead(sid string)(Session,error)
+//SessionDestroy(sid string)error
+//SessionGC(maxLifeTime int64)
+
+func (fp *FileProvider)SessionInit(){
+
+}
+
+
+
+
+
 //register FileProvider
 func init() {
 	session.RegisterProvider("file", filepder)

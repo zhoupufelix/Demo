@@ -6,3 +6,6 @@ type Response struct {
 	Data []interface{} `json:"data"`
 }
 
+func JSON(){
+
+}
