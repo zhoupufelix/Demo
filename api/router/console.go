@@ -1,6 +1,9 @@
 package router
 
-import "github.com/julienschmidt/httprouter"
+import (
+	"github.com/julienschmidt/httprouter"
+	"Demo/api/middleware/jwt"
+)
 
 func NewRouter(routers Routers)(result *httprouter.Router){
 	r := httprouter.New()
@@ -11,8 +14,7 @@ func NewRouter(routers Routers)(result *httprouter.Router){
 		var handle httprouter.Handle
 		handle = router.HandleFunc
 
-		//中间件
-
+		handle = jwt.JWT(handle)
 
 		r.Handle(router.Method,router.Path,handle)
 	}

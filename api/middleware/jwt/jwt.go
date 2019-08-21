@@ -4,6 +4,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"Demo/pkg/e"
+	"Demo/api"
 )
 
 
@@ -16,9 +17,16 @@ func JWT(fn func(w http.ResponseWriter, r *http.Request, param httprouter.Params
 		token := param.ByName("token")
 		if token == "" {
 			code = e.INVALID_PARAMS
-
 		}
 
+		if code != e.SUCCESS {
+			api.JSON(w,http.StatusUnauthorized,api.M{
+				"code":code,
+				"msg":e.GetMsg(code),
+				"data":data
+			})
+			return
+		}
 		fn(w,r,param)
 	}
 }
