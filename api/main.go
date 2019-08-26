@@ -1,7 +1,6 @@
 package main
 
 import (
-	"Demo/router"
 	"net/http"
 	"Demo/config"
 	r "Demo/api/router"

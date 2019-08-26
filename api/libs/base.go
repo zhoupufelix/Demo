@@ -1,4 +1,4 @@
-package api
+package libs
 
 import (
 	"net/http"
@@ -14,8 +14,8 @@ func JSON(w http.ResponseWriter,code int,obj interface{}){
 	w.WriteHeader(code)
 
 	header := w.Header()
-	header["Content-Type"] = "application/json; charset=utf-8"
-	jsonBytes,err := json.Marshal(obj)
+	header["Content-Type"] = []string{"application/json; charset=utf-8"}
+	jsonBytes,err := json.MarshalIndent(obj,"","\t")
 	if err != nil {
 		panic(err)
 	}

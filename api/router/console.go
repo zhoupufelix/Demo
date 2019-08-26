@@ -13,9 +13,11 @@ func NewRouter(routers Routers)(result *httprouter.Router){
 	for _,router := range routers{
 		var handle httprouter.Handle
 		handle = router.HandleFunc
-
-		handle = jwt.JWT(handle)
-
+		//获取token 的操作不需要
+		if  router.Name != "GetAuth" {
+			//包装一下返回
+			handle = jwt.JWT(handle)
+		}
 		r.Handle(router.Method,router.Path,handle)
 	}
 	return r

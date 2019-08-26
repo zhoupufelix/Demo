@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"github.com/dgrijalva/jwt-go"
 	"Demo/config"
+	"time"
 )
 
 //jwt密钥
@@ -31,6 +32,27 @@ func MakeMD5(str string)string{
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
 }
+
+//生成jwt
+func GenerateToken(username,password string)(string,error){
+	nowTime := time.Now()
+	expireTime := nowTime.Add(3*time.Hour)
+
+	claims := Claims{
+		username,
+		password,
+		jwt.StandardClaims{
+			ExpiresAt:expireTime.Unix(),
+			Issuer:"api",
+		},
+	}
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token, err := tokenClaims.SignedString(jwtSecret)
+
+	return token, err
+}
+
+
 
 /**
  * 验签
