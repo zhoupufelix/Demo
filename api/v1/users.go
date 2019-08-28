@@ -53,7 +53,18 @@ func GetAuth(w http.ResponseWriter,r *http.Request,params httprouter.Params){
 	})
 }
 
-
+// ShowUser godoc
+// @tags Users
+// @Summary 获得单个用户信息
+// @Description get data by ID
+// @ID get-string-by-int
+// @Accept  json
+// @Produce  json
+// @Param id path int true "User ID"
+// @Param token query string true "JWT TOKEN"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Failure 401 {string} json "{"code":400,"data":{},"msg":"请求参数错误"} {"code":20001,"data":{},"msg":"Token鉴权失败"} {"code":20002,"data":{},"msg":"Token已超时"}"
+// @Router /users/{id} [get]
 func GetUserByUID(w http.ResponseWriter,r *http.Request,params httprouter.Params){
 	user := &model.Users{}
 	pk := params.ByName("id")
@@ -65,8 +76,7 @@ func GetUserByUID(w http.ResponseWriter,r *http.Request,params httprouter.Params
 	if err != nil {
 		fmt.Println(err)
 	}
-	data := make(map[string]interface{})
-	data["user"] = u
+	data := u
 	code := e.SUCCESS
 
 	libs.JSON(w,http.StatusOK,libs.M{
@@ -74,5 +84,6 @@ func GetUserByUID(w http.ResponseWriter,r *http.Request,params httprouter.Params
 		"data":data,
 		"msg":e.GetMsg(code),
 	})
-
 }
+
+

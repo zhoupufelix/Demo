@@ -1,0 +1,46 @@
+basePath: /v1
+host: localhost:8087
+info:
+  contact:
+    email: felixfan@twusa.cn
+    name: API Support
+    url: http://www.twusa.cn
+  description: Twusa openapi 文档
+  license: {}
+  termsOfService: http://swagger.io/terms/
+  title: API 文档
+  version: "1.0"
+paths:
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get data by ID
+      operationId: get-string-by-int
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: JWT TOKEN
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+        "401":
+          description: '{"code":400,"data":{},"msg":"请求参数错误"} {"code":20001,"data":{},"msg":"Token鉴权失败"}
+            {"code":20002,"data":{},"msg":"Token已超时"}'
+          schema:
+            type: string
+      summary: 获得用户信息
+      tags:
+      - Users
+swagger: "2.0"
