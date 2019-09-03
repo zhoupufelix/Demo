@@ -8,7 +8,7 @@ import (
 func main(){
 	mux := router.NewRouter()
 	s := &http.Server{
-		Addr:":8089",
+		Addr:":8088",
 		Handler:mux,
 	}
 	s.ListenAndServe()
