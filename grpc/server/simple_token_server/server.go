@@ -13,6 +13,8 @@ import (
 	"Demo/library"
 	"time"
 	"Demo/pkg/e"
+	"google.golang.org/grpc/credentials"
+	"os"
 )
 
 type SearchService struct {
@@ -24,7 +26,7 @@ func(s *SearchService)Search(ctx context.Context,r *pb.SearchRequest)(*pb.Search
 }
 
 const(
-	PORT = "9004"
+	PORT = "9006"
 )
 
 func JwtInterceptor(ctx context.Context, req interface{},info *grpc.UnaryServerInfo,handler grpc.UnaryHandler)(interface{}, error){
@@ -41,7 +43,6 @@ func JwtInterceptor(ctx context.Context, req interface{},info *grpc.UnaryServerI
 
 	//检验token是否合法
 	claims,err := library.ParseToken(token)
-	log.Println(req)
 
 	if err != nil {
 		return nil,status.Errorf(codes.Unauthenticated,e.GetMsg(e.ERROR_AUTH_CHECK_TOKEN_FAIL))
@@ -55,7 +56,14 @@ func JwtInterceptor(ctx context.Context, req interface{},info *grpc.UnaryServerI
 
 
 func main(){
+	c,err := credentials.NewServerTLSFromFile(os.Getenv("gopath") +"/src/Demo/grpc/conf/server.pem",
+		os.Getenv("gopath") +"/src/Demo/grpc/conf/server.key")
+
+	if err != nil {
+		log.Fatalf("credentials.NewServerTLSFromFile err: %v", err)
+	}
 	opts := []grpc.ServerOption{
+		grpc.Creds(c),
 		grpc_middleware.WithUnaryServerChain(
 			JwtInterceptor,
 		),
