@@ -12,7 +12,7 @@ var mux = &http.ServeMux{}
 
 func NewRouter()*http.ServeMux{
 	//处理静态文件
-	files := http.FileServer(http.Dir(config.APP_PATH))
+	files := http.FileServer(http.Dir(conf.APP_PATH))
 	mux.Handle("/static/",http.StripPrefix("/static/",files))
 
 	//public

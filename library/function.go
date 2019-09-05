@@ -5,12 +5,12 @@ import (
 	"encoding/hex"
 	"crypto/md5"
 	"github.com/dgrijalva/jwt-go"
-	"Demo/config"
+	"Demo/conf"
 	"time"
 )
 
 //jwt密钥
-var jwtSecret = []byte(config.JWTSECRET)
+var jwtSecret = []byte(conf.JWTSECRET)
 
 type Claims struct{
 	Username string `json:"username"`

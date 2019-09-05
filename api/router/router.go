@@ -18,8 +18,8 @@ type Routers []Router
 
 func AllRouters()Routers{
 	routers := Routers{
-		Router{"GetUserInfo","GET","/v1/users/:id",v1.GetUserByUID},
 		Router{"GetAuth","GET","/v1/auth",v1.GetAuth},
+		Router{"GetUserInfo","GET","/v1/users/:id",v1.GetUserByUID},
 	}
 
 	return routers

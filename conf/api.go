@@ -1,4 +1,4 @@
-package config
+package conf
 
 const (
 	API_ADDR = "127.0.0.1:8087"

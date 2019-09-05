@@ -3,7 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
-	"Demo/config"
+	"Demo/conf"
 	"log"
 	"reflect"
 	_ "github.com/go-sql-driver/mysql"
@@ -28,18 +28,18 @@ type Response struct {
 
 func init(){
 	db ,err = sql.Open("mysql",fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&allowOldPasswords=1",
-		config.MYSQL_USERNAME,
-		config.MYSQL_PASSWORD,
-		config.MYSQL_HOST,
-		config.MYSQL_DBNAME,
+		conf.MYSQL_USERNAME,
+		conf.MYSQL_PASSWORD,
+		conf.MYSQL_HOST,
+		conf.MYSQL_DBNAME,
 		))
 	if err != nil {
 		log.Fatal(err)
 	}
 	//设置最大空闲连接数
-	db.SetMaxIdleConns(config.MYSQL_MAXIDLE)
+	db.SetMaxIdleConns(conf.MYSQL_MAXIDLE)
 	//设置最大连接数
-	db.SetMaxOpenConns(config.MYSQL_MAXCONNS)
+	db.SetMaxOpenConns(conf.MYSQL_MAXCONNS)
 }
 
 

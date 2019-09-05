@@ -1,0 +1,18 @@
+[api]
+server     = "127.0.0.1"
+port       = "8087"
+jwt_secret = "23347$040412"
+
+[database]
+type     = "mysql"
+server   = "120.26.63.239"
+port     = "3307"
+username = "glitzhome"
+password = "123glitzhome"
+dbname   = "gzcloud"
+maxconns = 50
+maxidle  = 40
+
+[Admin]
+server = "127.0.0.1"
+port   = "8806"

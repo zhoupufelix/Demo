@@ -2,9 +2,10 @@ package main
 
 import (
 	"net/http"
-	"Demo/config"
+	"Demo/conf"
 	r "Demo/api/router"
 	_ "Demo/api/docs"
+	"strings"
 )
 
 // @title API 文档
@@ -21,9 +22,13 @@ import (
 func main(){
 	routers := r.AllRouters()
 	mux := r.NewRouter(routers)
+	cfg := conf.Init()
+	srv := []string{cfg.Api.Server,cfg.Api.Port}
+	addr := strings.Join(srv,":")
+
 	server := http.Server{
-		Addr:config.API_ADDR,
-		Handler:mux,
+		Addr:    addr,
+		Handler: mux,
 	}
 	server.ListenAndServe()
 }
