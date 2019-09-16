@@ -21,6 +21,7 @@ func JWT(fn func(w http.ResponseWriter, r *http.Request, param httprouter.Params
 			code = e.INVALID_PARAMS
 		}else{
 			claims,err := library.ParseToken(token)
+
 			if err != nil {
 				code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
 			}else if time.Now().Unix() > claims.ExpiresAt {

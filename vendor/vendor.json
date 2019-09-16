@@ -9,6 +9,12 @@
 			"revisionTime": "2019-08-21T09:38:53Z"
 		},
 		{
+			"checksumSHA1": "rcoUTEGR7KVr963l6P1rlMaYCzA=",
+			"path": "github.com/BurntSushi/toml",
+			"revision": "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005",
+			"revisionTime": "2018-08-15T10:47:33Z"
+		},
+		{
 			"checksumSHA1": "cBwoYKHKPgwoF0brEMT6F105yww=",
 			"path": "github.com/DataDog/zstd",
 			"revision": ""
@@ -171,6 +177,18 @@
 			"path": "github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc",
 			"revision": "8e809c8a86450a29b90dcc9efbf062d0fe6d9746",
 			"revisionTime": "2018-05-07T21:33:50Z"
+		},
+		{
+			"checksumSHA1": "cpxsSQ1fTrTGUkAbF7/wxFT77KE=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "2a3ab99a081dc14b29dfd4df42d4c59ba1814d21",
+			"revisionTime": "2019-09-02T01:44:50Z"
+		},
+		{
+			"checksumSHA1": "Hf2EdZUOQfrn+iW34gg2/0GHo94=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "f5c5f50e6090ae76a29240b61ae2a90dd810112e",
+			"revisionTime": "2019-06-03T04:28:36Z"
 		},
 		{
 			"checksumSHA1": "bOg7D9jO9OAMJoP+c6EpsueiUD4=",
@@ -393,6 +411,12 @@
 		{
 			"checksumSHA1": "R4e+WZeYIHsulXVgQcoyHdidlJw=",
 			"path": "golang.org/x/tools/go/loader",
+			"revision": "b29f5f60c37a1dd56e6942c2717b85b976e4a592",
+			"revisionTime": "2019-08-18T19:55:34Z"
+		},
+		{
+			"checksumSHA1": "5iL0HC/3N/ai01wfgwYfSGIka1Q=",
+			"path": "golang.org/x/tools/go/ssa/interp/testdata/src/fmt",
 			"revision": "b29f5f60c37a1dd56e6942c2717b85b976e4a592",
 			"revisionTime": "2019-08-18T19:55:34Z"
 		},

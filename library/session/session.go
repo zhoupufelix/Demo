@@ -17,18 +17,18 @@ type Manager struct {
 	maxLifeTime int64
 }
 
-//存储的接口
+//session管理的接口
 type Provider interface {
-	SessionInit(sid string)(Session,error)
+	SessionInit(maxlifetime int64, savePath string)(Session,error)
 	SessionRead(sid string)(Session,error)
 	SessionDestroy(sid string)error
-	SessionGC(maxLifeTime int64)
+	SessionGC()
 }
 
-//Session 操作接口
+//Session 存储操作接口
 type Session interface {
 	Set(key,value interface{})error
-	Get(key,value interface{})interface{}
+	Get(key interface{})interface{}
 	Del(key interface{})error
 	SID() string
 }

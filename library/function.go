@@ -36,7 +36,7 @@ func MakeMD5(str string)string{
 //生成jwt
 func GenerateToken(username,password string)(string,error){
 	nowTime := time.Now()
-	expireTime := nowTime.Add(3*time.Hour)
+	expireTime := nowTime.Add(3*time.Minute)
 
 	claims := Claims{
 		username,
@@ -60,7 +60,6 @@ func GenerateToken(username,password string)(string,error){
 func ParseToken(token string)(*Claims, error){
 	tokenClaims,err := jwt.ParseWithClaims(token,&Claims{},func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil})
-
 	if tokenClaims != nil {
 		if claims,ok := tokenClaims.Claims.(*Claims);ok && tokenClaims.Valid {
 			return claims,nil
