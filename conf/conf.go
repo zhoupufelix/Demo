@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"flag"
 	"sync"
 	"path/filepath"
 	"log"
@@ -9,8 +8,7 @@ import (
 )
 
 var (
-	cfg * Config
-	env string
+	Cfg Config
 	confPath string
 	once sync.Once
 )
@@ -42,30 +40,31 @@ type database struct {
 type admin struct {
 	Server string
 	Port string
+	App_path string
 }
 
 //初始化函数 默认读取本地配置
-func init(){
-	flag.StringVar(&env, "env", "local", "default env")
-}
+//func init(){
+//	flag.StringVar(&env, "env", "local", "default env")
+//}
 
-func Init() *Config{
+func init(){
 	confPath = "src/Demo/conf/local.toml"
-	if env == "product" {
-		confPath = "src/Demo/conf/product.toml"
-	}
+	//if env == "product" {
+	//	confPath = "src/Demo/conf/product.toml"
+	//}
 	once.Do(func() {
 			filePath,err := filepath.Abs(confPath)
 			if err != nil {
 				panic(err)
 			}
 			log.Printf("parse toml file once.filepath:%s\n",filePath)
-			if _,err = toml.DecodeFile(filePath,&cfg);err != nil {
+			if _,err = toml.DecodeFile(filePath,&Cfg);err != nil {
 				panic(err)
 			}
 		})
-	return cfg
 }
+
 
 
 

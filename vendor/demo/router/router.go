@@ -2,17 +2,18 @@ package router
 
 import (
 	"net/http"
-
 	"Demo/controller"
 	"Demo/controller/back"
-	"Demo/config"
+	fp "path/filepath"
+	"Demo/conf"
 )
 
 var mux = &http.ServeMux{}
 
 func NewRouter()*http.ServeMux{
 	//处理静态文件
-	files := http.FileServer(http.Dir(conf.APP_PATH))
+	app_path,_:= fp.Abs(conf.Cfg.Admin.App_path)
+	files := http.FileServer(http.Dir(app_path))
 	mux.Handle("/static/",http.StripPrefix("/static/",files))
 
 	//public

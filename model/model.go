@@ -28,18 +28,19 @@ type Response struct {
 
 func init(){
 	db ,err = sql.Open("mysql",fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&allowOldPasswords=1",
-		conf.MYSQL_USERNAME,
-		conf.MYSQL_PASSWORD,
-		conf.MYSQL_HOST,
-		conf.MYSQL_DBNAME,
+		conf.Cfg.DB.Username,
+		conf.Cfg.DB.Password,
+		conf.Cfg.DB.Server,
+		conf.Cfg.DB.Dbname,
 		))
+	fmt.Println(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 	//设置最大空闲连接数
-	db.SetMaxIdleConns(conf.MYSQL_MAXIDLE)
+	db.SetMaxIdleConns(conf.Cfg.DB.Maxidle)
 	//设置最大连接数
-	db.SetMaxOpenConns(conf.MYSQL_MAXCONNS)
+	db.SetMaxOpenConns(conf.Cfg.DB.Maxconn)
 }
 
 

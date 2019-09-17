@@ -31,6 +31,9 @@ func(l *Login)CheckLogin(username,password string)Response{
 		return l.response
 	}
 
+	//登陆成功存入session
+
+
 	return l.response
 }
 

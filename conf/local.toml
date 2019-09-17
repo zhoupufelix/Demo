@@ -15,4 +15,5 @@ maxidle  = 40
 
 [Admin]
 server = "127.0.0.1"
-port   = "8806"
+port   = ":8806"
+app_path = "src/Demo/public"

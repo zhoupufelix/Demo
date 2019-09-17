@@ -8,32 +8,54 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"log"
+	"os"
+	"bytes"
+	"encoding/gob"
+	"fmt"
 )
 
 type Manager struct {
 	cookieName 	string
+	savePath 	string
 	lock 		sync.Mutex
 	provider 	Provider
 	maxLifeTime int64
 }
 
+//providers 存放了各种session存储介质
+var providers = make(map[string]Provider)
+
+func NewManager(providerName ,cookieName string,maxLifeTime int64,savePath string) (*Manager, error){
+	provider,ok := providers[providerName]
+	if !ok  {
+		return nil,fmt.Errorf("session: unknown provide %q (forgotten import?)", providerName)
+	}
+	return &Manager{cookieName:cookieName ,provider:provider,maxLifeTime:maxLifeTime,savePath:savePath},nil
+}
+
+
 //session管理的接口
 type Provider interface {
-	SessionInit(maxlifetime int64, savePath string)(Session,error)
-	SessionRead(sid string)(Session,error)
+	SessionInit(maxlifetime int64, savePath string)error
+	SessionRead(sid string)(Store,error)
 	SessionDestroy(sid string)error
 	SessionGC()
 }
 
 //Session 存储操作接口
-type Session interface {
+type Store interface {
 	Set(key,value interface{})error
 	Get(key interface{})interface{}
 	Del(key interface{})error
 	SID() string
 }
 
-var providers = make(map[string]Provider)
+
+
+// SLogger 定制化session 日志
+var SLogger = NewSessionLog(os.Stderr)
+
 
 //注册Session 寄存器
 func RegisterProvider(name string,provider Provider){
@@ -56,13 +78,13 @@ func(m *Manager)GenerateSID()string{
 }
 
 //SessionStart 开启 session
-func(m *Manager)SessionStart(w http.ResponseWriter,r *http.Request)(session Session){
+func(m *Manager)SessionStart(w http.ResponseWriter,r *http.Request)(session Store){
 	m.lock.Lock()
 	defer m.lock.Unlock()
 	cookie,err := r.Cookie(m.cookieName)
 	if err != nil || cookie.Value == "" {
 		sid:= m.GenerateSID()
-		session,_ =m.provider.SessionInit(sid)
+		err =m.provider.SessionInit(m.maxLifeTime,m.savePath)
 		newCookie := http.Cookie{
 			Name : m.cookieName,
 			Value: url.QueryEscape(sid),
@@ -101,10 +123,34 @@ func(m *Manager)SessionDestory(w http.ResponseWriter,r *http.Request){
 
 //SessionGC Session 垃圾回收
 func(m *Manager)SessionGC(){
-	m.lock.Lock()
-	defer m.lock.Unlock()
-	m.provider.SessionGC(m.maxLifeTime)
-	time.AfterFunc(time.Duration(m.maxLifeTime), func() {
-		m.SessionGC()
-	})
+	//m.lock.Lock()
+	//defer m.lock.Unlock()
+	//m.provider.SessionGC()
+
+	//time.AfterFunc(time.Duration(m.maxLifeTime), func() {
+	//	m.SessionGC()
+	//})
+}
+
+// Log implement the log.Logger
+type Log struct {
+	*log.Logger
+}
+
+func NewSessionLog(out io.Writer)*Log{
+	sl := new(Log)
+	sl.Logger = log.New(out, "[SESSION]", 1e9)
+	return sl
+}
+
+// DecodeGob decode data to map
+func DecodeGob(encoded []byte) (map[interface{}]interface{}, error) {
+	buf := bytes.NewBuffer(encoded)
+	dec := gob.NewDecoder(buf)
+	var out map[interface{}]interface{}
+	err := dec.Decode(&out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
